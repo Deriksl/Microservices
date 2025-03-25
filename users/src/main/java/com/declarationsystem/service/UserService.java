@@ -1,54 +1,56 @@
 package com.declarationsystem.service;
 
 import com.declarationsystem.entities.User;
+import com.declarationsystem.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
 
-    private final List<User> users = new ArrayList<>();
-    private Integer nextId = 1;
+    private final UserRepository userRepository;
 
-    // Obtener todos los usuarios
-    public List<User> getAllUser() {
-        return users;
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    // Obtener un usuario por ID
+    public List<User> getAllUser() {
+        return userRepository.findAll();
+    }
+
     public User getUserById(Integer id) {
-        return users.stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst()
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User addUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public User updateUser(Integer id, User userDetails) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setName(userDetails.getName());
+                    user.setLastname(userDetails.getLastname());
+                    user.setEmail(userDetails.getEmail());
+                    if (userDetails.getPasswordHash() != null && !userDetails.getPasswordHash().isEmpty()) {
+                        user.setPasswordHash(userDetails.getPasswordHash());
+                    }
+                    return userRepository.save(user);
+                })
                 .orElse(null);
     }
 
-    // Agregar un nuevo usuario
-    public User addUser(User user) {
-        user.setId(nextId++);
-        users.add(user);
-        return user;
-    }
-
-    // Actualizar un usuario existente
-    public User updateUser(Integer id, User user) {
-        Optional<User> existingUser = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-        if (existingUser.isPresent()) {
-            User updatedUser = existingUser.get();
-            updatedUser.setName(user.getName());
-            updatedUser.setEmail(user.getEmail());
-            return updatedUser;
-        }
-        return null;
-    }
-
-    // Eliminar un usuario
     public boolean deleteUser(Integer id) {
-        return users.removeIf(user -> user.getId().equals(id));
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

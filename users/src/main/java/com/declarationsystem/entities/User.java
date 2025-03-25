@@ -1,54 +1,54 @@
 package com.declarationsystem.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-@Data
+@Getter
+@Setter
 @Entity
+@Table(name = "users")
 public class User {
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-    private String lastname;
-    private String email;
-    private String passwordHash; // Almacenar el hash de la contraseña
 
-    public User(Integer id, String name, String email, char[] password) {
-        this.id = id;
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
+
+    @Column(name = "lastname", nullable = false, length = 100)
+    private String lastname;
+
+    @Column(name = "email", nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    public User() {}
+
+    public User(String name, String lastname, String email, char[] password) {
         this.name = name;
+        this.lastname = lastname;
         this.email = email;
         this.passwordHash = hashPassword(password);
     }
 
-    public User() {
-    }
-
-    // Método para hashear la contraseña
     private String hashPassword(char[] password) {
         try {
-            // Convertir el char[] a String
             String passwordStr = new String(password);
-
-            // Generar un salt aleatorio
             SecureRandom random = new SecureRandom();
             byte[] salt = new byte[16];
             random.nextBytes(salt);
 
-            // Crear el hash de la contraseña
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(salt);
             byte[] hashedPassword = md.digest(passwordStr.getBytes());
 
-            // Combinar el salt y el hash para almacenarlo
             byte[] combined = new byte[salt.length + hashedPassword.length];
             System.arraycopy(salt, 0, combined, 0, salt.length);
             System.arraycopy(hashedPassword, 0, combined, salt.length, hashedPassword.length);
@@ -59,53 +59,8 @@ public class User {
         }
     }
 
-    // Método para verificar la contraseña
     public boolean verifyPassword(char[] password) {
         String newHash = hashPassword(password);
         return newHash.equals(this.passwordHash);
     }
-
-    // Getters y setters (generados automáticamente por Lombok @Data)
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-
 }

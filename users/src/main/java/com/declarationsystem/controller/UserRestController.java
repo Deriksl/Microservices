@@ -2,11 +2,12 @@ package com.declarationsystem.controller;
 
 import com.declarationsystem.entities.User;
 import com.declarationsystem.service.UserService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users") // Asegúrate de que todas las solicitudes sean a /users
