@@ -16,8 +16,10 @@ import com.imt.auth.usuarios.UserDetailsServiceImpl;
 @RequiredArgsConstructor
 public class AppConfig {
 
+    private final UserDetailsServiceImpl userDetailsService;
+
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsService) {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());

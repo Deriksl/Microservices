@@ -1,11 +1,14 @@
 package com.imt.auth.controller;
 
+import com.imt.auth.dto.LoginRequest;
+import com.imt.auth.dto.RegisterRequest;
+import com.imt.auth.dto.TokenResponse;
 import com.imt.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,24 +23,15 @@ public class AuthController {
     @Operation(summary = "Register new user")
     @ApiResponse(responseCode = "200", description = "User registered successfully")
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(service.register(request));
     }
 
     @Operation(summary = "Authenticate user")
     @ApiResponse(responseCode = "200", description = "Login successful")
-    @ApiResponse(responseCode = "403", description = "Invalid credentials")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(service.login(request));
-    }
-
-    @Operation(summary = "Refresh token")
-    @ApiResponse(responseCode = "200", description = "Token refreshed successfully")
-    @ApiResponse(responseCode = "403", description = "Invalid refresh token")
-    @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshToken(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-        return ResponseEntity.ok(service.refreshToken(authHeader));
     }
 }

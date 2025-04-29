@@ -1,4 +1,4 @@
-package com.imt.auth.controller;
+package com.imt.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;
