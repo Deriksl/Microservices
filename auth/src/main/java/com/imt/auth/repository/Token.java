@@ -1,39 +1,39 @@
 package com.imt.auth.repository;
 
-
 import com.imt.auth.usuarios.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "tokens")
+@Entity
+@Table(name = "tokens")
 public class Token {
 
     public enum TokenType {
-        BEARER,
+        BEARER
     }
 
     @Id
-    @GeneratedValue
-    public Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(unique = true)
-    public String token;
+    private String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    @Builder.Default
+    private TokenType tokenType = TokenType.BEARER;
 
-    public boolean revoked;
+    @Builder.Default
+    private boolean expired = false;
 
-    public boolean expired;
+    @Builder.Default
+    private boolean revoked = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 }

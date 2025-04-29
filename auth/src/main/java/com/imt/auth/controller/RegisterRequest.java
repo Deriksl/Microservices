@@ -1,7 +1,12 @@
 package com.imt.auth.controller;
 
-public record RegisterRequest (
-        String email,
-        String password,
-        String name
-) { }
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class RegisterRequest {
+    private String name;
+    private String email;
+    private String password;
+}

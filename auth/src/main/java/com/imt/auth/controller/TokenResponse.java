@@ -1,11 +1,6 @@
 package com.imt.auth.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public record TokenResponse (
-    @JsonProperty("access_token")
+public record TokenResponse(
     String accessToken,
-    @JsonProperty("refresh_token")
     String refreshToken
-
-){}
+) {}
